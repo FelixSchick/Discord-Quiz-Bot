@@ -16,6 +16,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class QuizProvider {
@@ -207,7 +208,7 @@ public class QuizProvider {
     }
     
     private AsyncCacheLoader<Integer, QuizQuestion> loadQuestions() {
-        AsyncCacheLoader<Integer, QuizQuestion> integerQuizQuestionAsyncCacheLoader = (id, executor) -> {
+        return (id, executor) -> {
             CompletableFuture<QuizQuestion> completableFuture = new CompletableFuture<>();
 
             runAsync(() -> {
@@ -217,10 +218,8 @@ public class QuizProvider {
             });
             return completableFuture;
         };
-        return integerQuizQuestionAsyncCacheLoader;
     }
 
-    @SuppressWarnings("unchecked")
     private Optional<QuizQuestion> getQuizQuestionByIDFromSQL(final int id) {
         try {
             return (Optional<QuizQuestion>) CompletableFuture.supplyAsync(() -> {
@@ -242,8 +241,9 @@ public class QuizProvider {
                             answers.add(new QuizQuestionAnswer(answer, correct));
                         }
 
-                        final boolean isMultipleChoice =
-                                answers.stream().filter(quizQuestionAnswer -> quizQuestionAnswer.isCorrect() == true).toList().size() > 0;
+
+
+                        final boolean isMultipleChoice = (!answers.isEmpty() && !answers.stream().filter(QuizQuestionAnswer::isCorrect).toList().isEmpty());
 
                         QuizQuestion quizQuestion = new QuizQuestion(id, question, isMultipleChoice, difficultyLevel, answers);
                         return Optional.of(quizQuestion);
@@ -254,8 +254,9 @@ public class QuizProvider {
                 return Optional.empty();
             }).get();
         } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
+        return Optional.empty();
     }
 
     public void saveAllQuizQuestionsToSQL() {

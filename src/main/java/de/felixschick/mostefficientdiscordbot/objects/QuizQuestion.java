@@ -16,4 +16,15 @@ public class QuizQuestion {
     private boolean multipleChoice;
     private QuizQuestionDifficultyLevel difficultyLevel;
     private List<QuizQuestionAnswer> answers;
+
+    @Override
+    public String toString() {
+        return "QuizQuestion{" +
+                "id=" + id +
+                ", question='" + question + '\'' +
+                ", multipleChoice=" + multipleChoice +
+                ", difficultyLevel=" + difficultyLevel +
+                ", answers=" + answers +
+                '}';
+    }
 }
