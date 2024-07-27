@@ -1,16 +1,18 @@
 package de.felixschick.mostefficientdiscordbot.enums;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.awt.*;
+
+@Getter
+@AllArgsConstructor
 public enum QuizQuestionDifficultyLevel {
-    EASY("Easy"),
-    MEDIUM("medium"),
-    HARD("hard");
+    EASY("easy", Color.GREEN),
+    MEDIUM("medium", Color.YELLOW),
+    HARD("hard", Color.RED);
 
-    @Getter
-    private String displayName;
+    private final String displayName;
 
-    QuizQuestionDifficultyLevel(String displayName) {
-        this.displayName = displayName;
-    }
+    private final Color color;
 }

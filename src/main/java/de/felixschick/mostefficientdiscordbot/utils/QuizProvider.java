@@ -235,10 +235,12 @@ public class QuizProvider {
 
                         for (String rawAnswer : rawAnswers) {
                             String[] splitAnswer = rawAnswer.split(",");
-                            String answer = splitAnswer[0];
-                            Boolean correct = Boolean.valueOf(splitAnswer[1]);
+                            if(splitAnswer.length == 2) {
+                                String answer = splitAnswer[0];
+                                Boolean correct = Boolean.valueOf(splitAnswer[1]);
 
-                            answers.add(new QuizQuestionAnswer(answer, correct));
+                                answers.add(new QuizQuestionAnswer(answer, correct));
+                            }
                         }
 
 

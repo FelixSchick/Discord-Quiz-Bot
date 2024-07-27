@@ -1,6 +1,8 @@
 package de.felixschick.mostefficientdiscordbot;
 
+import de.felixschick.mostefficientdiscordbot.handler.QuestionResponseHandler;
 import de.felixschick.mostefficientdiscordbot.helper.CommandHelper;
+import de.felixschick.mostefficientdiscordbot.handler.QuestionCreationHandler;
 import de.felixschick.mostefficientdiscordbot.sql.MySQL;
 import de.felixschick.mostefficientdiscordbot.utils.QuizProvider;
 import lombok.Getter;
@@ -12,7 +14,6 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import org.reflections.Reflections;
 
-import java.sql.SQLOutput;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -24,6 +25,12 @@ public class MostEfficientDiscordBot {
 
     @Getter
     private static QuizProvider quizProvider;
+
+    @Getter
+    private static QuestionCreationHandler creationHandler;
+
+    @Getter
+    private static QuestionResponseHandler questionResponseHandler;
 
     @Getter
     private static MySQL mySQL;
@@ -41,7 +48,10 @@ public class MostEfficientDiscordBot {
                 throw new RuntimeException("No SQL input args found");
 
             quizProvider = new QuizProvider();
+            creationHandler = new QuestionCreationHandler();
+            questionResponseHandler = new QuestionResponseHandler();
             commandHelper = new CommandHelper();
+
             startBot(args[0]);
 
             Runtime.getRuntime().addShutdownHook(new Thread()
@@ -75,9 +85,7 @@ public class MostEfficientDiscordBot {
         reflections.getSubTypesOf(ListenerAdapter.class).forEach(aClass -> {
             try {
                 jda.addEventListener(aClass.newInstance());
-            } catch (InstantiationException e) {
-                throw new RuntimeException(e);
-            } catch (IllegalAccessException e) {
+            } catch (InstantiationException | IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
         });
