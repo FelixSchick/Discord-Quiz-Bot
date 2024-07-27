@@ -1,5 +1,6 @@
 package de.felixschick.mostefficientdiscordbot.helper;
 
+import de.felixschick.mostefficientdiscordbot.MostEfficientDiscordBot;
 import de.felixschick.mostefficientdiscordbot.commands.interfaces.MessageContextCommand;
 import de.felixschick.mostefficientdiscordbot.commands.interfaces.SlashCommand;
 import de.felixschick.mostefficientdiscordbot.commands.interfaces.UserContextCommand;
@@ -45,7 +46,8 @@ public class CommandHelper {
     }
 
     public void registerGlobalCommands() {
-        //TODO: implement global commands (if needed)
+        MostEfficientDiscordBot.getJda().updateCommands().addCommands(getCommandDataCollection()).queue();
+        System.out.println("Commands added globally");
     }
 
     private Collection<CommandData> getCommandDataCollection() {
