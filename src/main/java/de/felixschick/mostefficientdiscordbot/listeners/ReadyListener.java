@@ -10,8 +10,8 @@ public class ReadyListener extends ListenerAdapter {
     @Override
     public void onReady(final ReadyEvent event) {
         System.out.println("---------Start to registry the commands---------");
-        System.out.println("guild only:");
-        //MostEfficientDiscordBot.getCommandHelper().registerGuildCommands(event.getJDA().getGuilds());
+        /*.out.println("guild only:");
+        MostEfficientDiscordBot.getCommandHelper().registerGuildCommands(event.getJDA().getGuilds());*/
         System.out.println("global:");
         MostEfficientDiscordBot.getCommandHelper().registerGlobalCommands();
         System.out.println("----------End to registry the commands----------");

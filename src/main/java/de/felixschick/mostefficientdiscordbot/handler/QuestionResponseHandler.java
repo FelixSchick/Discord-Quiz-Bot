@@ -6,6 +6,7 @@ import de.felixschick.mostefficientdiscordbot.objects.QuizQuestion;
 import de.felixschick.mostefficientdiscordbot.objects.QuizQuestionAnswer;
 import de.felixschick.mostefficientdiscordbot.utils.QuizProvider;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
@@ -38,12 +39,15 @@ public class QuestionResponseHandler {
                 QuizQuestionAnswer quizQuestionAnswer = optionalQuizQuestionAnswer.get();
 
                 if (quizQuestionAnswer.isCorrect()) {
-                    event.getMessage().reply("The user " + event.getMember().getAsMention() + " got the right answer").queue();
+                    event.deferEdit().queue();
 
                     List<Button> buttons = new ArrayList<>();
 
                     event.getMessage().getButtons().forEach(button -> {
-                        buttons.add(button.asDisabled());
+                        if (button.getId().equals(event.getButton().getId())) {
+                            buttons.add(button.withEmoji(Emoji.fromUnicode("U+1F31F")).asDisabled());
+                        } else
+                            buttons.add(button.asDisabled());
                     });
 
                     EmbedBuilder embedBuilder = new EmbedBuilder()
@@ -54,7 +58,7 @@ public class QuestionResponseHandler {
 
                     StringBuilder answerBuilder = new StringBuilder();
                     quizQuestion.getAnswers().forEach(questionAnswer ->
-                            answerBuilder.append("  -").append(questionAnswer.getAnswer()).append("(").append(questionAnswer.isCorrect()).append(")\n")
+                            answerBuilder.append("  -").append(questionAnswer.getAnswer()).append(")\n")
                     );
                     embedBuilder.addField("Question", quizQuestion.getQuestion() + "\n" + answerBuilder.toString(), false);
 

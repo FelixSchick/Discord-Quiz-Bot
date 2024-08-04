@@ -76,15 +76,27 @@ public class QuizProvider {
             quizQuestions.add(getQuizQuestion(integer));
         });
 
-        System.out.println(quizQuestions);
         return quizQuestions;
     }
 
-    public Optional<QuizQuestion> creatQuizQuestion(final String question, final QuizQuestionDifficultyLevel difficultyLevel, final List<QuizQuestionAnswer> answers) {
-        final boolean isMultipleChoice =
-                answers.stream().filter(quizQuestionAnswer -> quizQuestionAnswer.isCorrect() == true).toList().size() > 0;
+    public List<QuizQuestion> getQuizQuestions(final long guildID, QuizQuestionDifficultyLevel difficultyLevel) {
+        List<QuizQuestion> quizQuestions = new ArrayList<>();
 
-        return saveQuizQuestion(new QuizQuestion(-1, question, isMultipleChoice, difficultyLevel, answers));
+
+        List<Integer> integers = callEveryQuestionByDifficultyLevel(difficultyLevel).get();
+
+        integers.forEach(integer -> {
+            QuizQuestion quizQuestion = getQuizQuestion(integer);
+            if (quizQuestion.getGuildID() == guildID || quizQuestion.getGuildID() == -1)
+                quizQuestions.add(quizQuestion);
+        });
+
+        return quizQuestions;
+    }
+
+    public Optional<QuizQuestion> creatQuizQuestion(final long guildID, final String question, final QuizQuestionDifficultyLevel difficultyLevel, final List<QuizQuestionAnswer> answers) {
+
+        return saveQuizQuestion(new QuizQuestion(-1, question, guildID, difficultyLevel, answers));
     }
 
     private Optional<List<Integer>> callEveryQuestionByDifficultyLevel(QuizQuestionDifficultyLevel difficultyLevel) {
@@ -164,7 +176,7 @@ public class QuizProvider {
         AtomicReference<Optional<QuizQuestion>> optionalQuizQuestion = new AtomicReference<>(Optional.empty());
 
         CompletableFuture.supplyAsync(() ->
-                    mySQL.update("INSERT INTO `quiz_questions`(`question`, `difficultylevel`, `answers`) VALUES ('"+quizQuestion.getQuestion()+"', '"+quizQuestion.getDifficultyLevel()+"', '"+answerBuilder.toString()+"');")
+                    mySQL.update("INSERT INTO `quiz_questions`(`question`, `guildid`, `difficultylevel`, `answers`) VALUES ('"+quizQuestion.getQuestion()+"', '"+ quizQuestion.getGuildID() +"', '"+ quizQuestion.getDifficultyLevel()+"', '"+answerBuilder.toString()+"');")
                 ).thenAccept(resultSet -> {
                     if (resultSet != -1) {
                         CompletableFuture<QuizQuestion> completableFuture = new CompletableFuture<>();
@@ -229,6 +241,7 @@ public class QuizProvider {
                         final QuizQuestionDifficultyLevel difficultyLevel = QuizQuestionDifficultyLevel.
                                 valueOf(resultSet.getString("difficultylevel"));
                         final List<QuizQuestionAnswer> answers = new ArrayList<>();
+                        final long guildID = resultSet.getLong("guildID");
 
                         final String[] rawAnswers = resultSet.getString("answers").split(";");
 
@@ -242,11 +255,7 @@ public class QuizProvider {
                             }
                         }
 
-
-
-                        final boolean isMultipleChoice = (!answers.isEmpty() && !answers.stream().filter(QuizQuestionAnswer::isCorrect).toList().isEmpty());
-
-                        QuizQuestion quizQuestion = new QuizQuestion(id, question, isMultipleChoice, difficultyLevel, answers);
+                        QuizQuestion quizQuestion = new QuizQuestion(id, question, guildID, difficultyLevel, answers);
                         return Optional.of(quizQuestion);
                     }
                 } catch (SQLException e) {
@@ -274,7 +283,7 @@ public class QuizProvider {
             System.out.println(quizQuestion.getId());
 
 
-            mySQL.update("UPDATE `quiz_questions` SET `question` = '" + quizQuestion.getQuestion() + "', `difficultylevel` = '" + quizQuestion.getDifficultyLevel() + "', `answers` = '" + answerBuilder.toString() + "' WHERE `id` = '" + id + "';");
+            mySQL.update("UPDATE `quiz_questions` SET `question` = '" + quizQuestion.getQuestion() + "', `difficultylevel` = '" + quizQuestion.getDifficultyLevel() + "', `guildid` = '" + quizQuestion.getGuildID() + "', `answers` = '" + answerBuilder.toString() + "' WHERE `id` = '" + id + "';");
             System.out.println("Quiz Question " + id + " saved");
         }
     }

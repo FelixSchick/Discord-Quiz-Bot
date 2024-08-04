@@ -62,7 +62,6 @@ public class MostEfficientDiscordBot {
                     quizProvider.saveAllQuizQuestionsToSQL();
                 }
             });
-
         } else
             throw new RuntimeException("No Token found...");
     }
@@ -70,7 +69,7 @@ public class MostEfficientDiscordBot {
     private static void startBot(String botToken) {
         //init the jdaBuilder and set the Activity
         final JDABuilder jdaBuilder = JDABuilder.createDefault(botToken);
-        jdaBuilder.setActivity(Activity.competing("Fortnite RP"));
+        jdaBuilder.setActivity(Activity.competing("Quiz"));
         jdaBuilder.enableIntents(GatewayIntent.GUILD_MEMBERS);
         jdaBuilder.setMemberCachePolicy(MemberCachePolicy.ALL);
 
