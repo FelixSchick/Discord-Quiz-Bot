@@ -115,6 +115,6 @@ public class MySQL {
     public void createTabels() {
         //quiz-questions: guildid, id, question, difficultylevel, answers(answer, true; answer, false, ...);
         if (!isConnected()) return;
-        update("CREATE TABLE IF NOT EXISTS quiz_questions (id int auto_increment, question TEXT, difficultylevel VARCHAR(20), answers TEXT, PRIMARY KEY (id))");
+        update("CREATE TABLE IF NOT EXISTS quiz_questions (id int auto_increment, question TEXT, guildid VARCHAR(20), difficultylevel VARCHAR(20), answers TEXT, PRIMARY KEY (id))");
     }
 }

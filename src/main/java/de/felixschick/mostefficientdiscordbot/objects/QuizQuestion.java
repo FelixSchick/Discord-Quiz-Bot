@@ -13,7 +13,7 @@ import java.util.List;
 public class QuizQuestion {
     private int id;
     private String question;
-    private boolean multipleChoice;
+    private long guildID;
     private QuizQuestionDifficultyLevel difficultyLevel;
     private List<QuizQuestionAnswer> answers;
 
@@ -22,7 +22,7 @@ public class QuizQuestion {
         return "QuizQuestion{" +
                 "id=" + id +
                 ", question='" + question + '\'' +
-                ", multipleChoice=" + multipleChoice +
+                ", guildID=" + guildID +
                 ", difficultyLevel=" + difficultyLevel +
                 ", answers=" + answers +
                 '}';

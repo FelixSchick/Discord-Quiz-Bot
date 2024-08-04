@@ -1,3 +1,3 @@
 
-Å
-Qsrc/main/java/de/felixschick/mostefficientdiscordbot/listeners/ReadyListener.java,d\7\d74e7abae02305e2e1985f8dcfe4d86682cded48
+~
+Nsrc/main/java/de/felixschick/mostefficientdiscordbot/helper/CommandHelper.java,c\6\c67d03ebd13a176bc765de0579cf71f40b0dc63d

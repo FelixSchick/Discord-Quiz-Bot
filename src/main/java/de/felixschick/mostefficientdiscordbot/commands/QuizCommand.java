@@ -10,6 +10,7 @@ import de.felixschick.mostefficientdiscordbot.objects.QuizQuestionAnswer;
 import de.felixschick.mostefficientdiscordbot.utils.QuizProvider;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.*;
@@ -72,11 +73,11 @@ public class QuizCommand implements SlashCommand {
             }
         } else if (event.getSubcommandName() != null && event.getSubcommandName() != "") {
             if (event.getSubcommandName().equalsIgnoreCase("list")) {
-                sendQuestionListEmbed(event.getChannel().asTextChannel());
+                sendQuestionListEmbed(event);
 
             } else if (event.getSubcommandName().equalsIgnoreCase("question")) {
                 final QuizQuestionDifficultyLevel difficultyLevel = QuizQuestionDifficultyLevel.valueOf(event.getOption("difficultylevel").getAsString());
-                final List<QuizQuestion> quizQuestions = quizProvider.getQuizQuestions(difficultyLevel);
+                final List<QuizQuestion> quizQuestions = quizProvider.getQuizQuestions(event.getGuild().getIdLong(), difficultyLevel);
                 final QuizQuestion randomQuestion = quizQuestions.get(random.nextInt(quizQuestions.size()));
 
                 sendQuestionEmbed(event, difficultyLevel, randomQuestion);
@@ -86,7 +87,7 @@ public class QuizCommand implements SlashCommand {
 
 
 
-    private void sendQuestionListEmbed(TextChannel targetChannel) {
+    private void sendQuestionListEmbed(SlashCommandInteractionEvent event) {
         EmbedBuilder embedBuilder = new EmbedBuilder()
                 .setTitle("Quiz questions")
                 .setColor(Color.BLUE);
@@ -101,7 +102,7 @@ public class QuizCommand implements SlashCommand {
 
         embedBuilder.setFooter(Calendar.getInstance().getTime().toString());
 
-        targetChannel.sendMessageEmbeds(embedBuilder.build()).queue();
+        event.replyEmbeds(embedBuilder.build()).queue();
     }
 
     private void sendQuestionEmbed(SlashCommandInteractionEvent event, QuizQuestionDifficultyLevel difficultyLevel, QuizQuestion randomQuestion) {
@@ -129,8 +130,10 @@ public class QuizCommand implements SlashCommand {
             counter.getAndIncrement();
         });
 
+        if (actionRow.isEmpty())
+            actionRow.add(Button.danger("quiz-error-noanswer", "No Answer available").withEmoji(Emoji.fromUnicode("U+1F928")).asDisabled());
 
-        event.getChannel().sendMessageEmbeds(embedBuilder.build()).addActionRow(actionRow).queue();
+        event.replyEmbeds(embedBuilder.build()).addActionRow(actionRow).queue();
     }
 
     private String convertNumberToWord(int number) {

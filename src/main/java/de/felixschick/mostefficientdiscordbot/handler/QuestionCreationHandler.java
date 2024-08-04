@@ -24,7 +24,7 @@ public class QuestionCreationHandler {
             final String questions = event.getOption("question").getAsString();
             final QuizQuestionDifficultyLevel difficultyLevel = QuizQuestionDifficultyLevel.valueOf(event.getOption("difficultylevel").getAsString());
 
-            quizProvider.creatQuizQuestion(questions, difficultyLevel, new ArrayList<>()).ifPresentOrElse(quizQuestion -> {
+            quizProvider.creatQuizQuestion(event.getGuild().getIdLong(), questions, difficultyLevel, new ArrayList<>()).ifPresentOrElse(quizQuestion -> {
                 event.reply("Quiz-Frage: " + quizQuestion.getQuestion() + " wurde erfolgreich mit der ID #" + quizQuestion.getId() + " erstellt")
                         .setEphemeral(true).queue();
             }, () -> event.reply("Quiz-Frage: " + questions + " wurde erfolgreich erstellt")
