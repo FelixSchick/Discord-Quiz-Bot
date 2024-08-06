@@ -1,6 +1,10 @@
 package de.felixschick.quizy.sql;
 
 import lombok.Getter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.sql.*;
 
@@ -14,7 +18,7 @@ public class MySQL {
     private String username;
     private String password;
 
-    public MySQL(String host, String port, String database, String username, String password) {
+    public MySQL( String host,  String port,  String database,  String username,  String password) {
         this.host = host;
         this.port = port;
         this.database = database;
@@ -114,6 +118,8 @@ public class MySQL {
     public void createTabels() {
         //quiz-questions: guildid, id, question, difficultylevel, answers(answer, true; answer, false, ...);
         if (!isConnected()) return;
+        System.out.println("Tabels");
+        update("CREATE TABLE IF NOT EXISTS bot_info (id VARCHAR(40), value TEXT, PRIMARY KEY (id))");
         update("CREATE TABLE IF NOT EXISTS quiz_questions (id int auto_increment, question TEXT, guildid VARCHAR(20), difficultylevel VARCHAR(20), answers TEXT, PRIMARY KEY (id))");
     }
 }

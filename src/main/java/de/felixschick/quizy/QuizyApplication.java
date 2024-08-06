@@ -3,10 +3,9 @@ package de.felixschick.quizy;
 import de.felixschick.quizy.handler.QuestionCreationHandler;
 import de.felixschick.quizy.handler.QuestionResponseHandler;
 import de.felixschick.quizy.helper.CommandHelper;
-import de.felixschick.quizy.properties.BotProperties;
 import de.felixschick.quizy.sql.MySQL;
+import de.felixschick.quizy.utils.BotInformationProvider;
 import de.felixschick.quizy.utils.QuizProvider;
-import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -25,11 +24,13 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+
 @SpringBootApplication
 public class QuizyApplication implements ApplicationRunner {
 
     @Getter
     private static JDA jda;
+
     @Getter
     private static CommandHelper commandHelper;
 
@@ -45,15 +46,15 @@ public class QuizyApplication implements ApplicationRunner {
     @Getter
     private static MySQL mySQL;
 
-    @Autowired
-    private BotProperties botProperties;
+    @Getter
+    private static BotInformationProvider botInformationProvider;
+
 
     @Getter
     private static final ExecutorService executorService = Executors.newCachedThreadPool();
 
     public static void main(String[] args) {
         SpringApplication.run(QuizyApplication.class, args);
-
     }
 
     @Override
@@ -68,6 +69,7 @@ public class QuizyApplication implements ApplicationRunner {
                 throw new RuntimeException("No SQL input args found");
 
             quizProvider = new QuizProvider();
+            botInformationProvider = new BotInformationProvider();
             creationHandler = new QuestionCreationHandler();
             questionResponseHandler = new QuestionResponseHandler();
             commandHelper = new CommandHelper();
@@ -92,8 +94,8 @@ public class QuizyApplication implements ApplicationRunner {
         //init the jdaBuilder and set the Activity
         final JDABuilder jdaBuilder = JDABuilder.createDefault(botToken);
         jdaBuilder.setActivity(Activity.of(
-                Activity.ActivityType.valueOf(botProperties.getProperty("activity-type").toUpperCase()),
-                botProperties.getProperty("activity-label")
+                Activity.ActivityType.valueOf(botInformationProvider.getInfo("activity_type").toUpperCase()),
+                botInformationProvider.getInfo("activity_label")
         ));
         jdaBuilder.enableIntents(GatewayIntent.GUILD_MEMBERS);
         jdaBuilder.setMemberCachePolicy(MemberCachePolicy.ALL);

@@ -21,6 +21,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class QuizProvider {
+
     private MySQL mySQL;
 
     @Getter
@@ -33,8 +34,6 @@ public class QuizProvider {
 
     public QuizProvider() {
         this.executor = QuizyApplication.getExecutorService();
-
-        mySQL = QuizyApplication.getMySQL();
         
         quizQuestionCache = Caffeine.newBuilder()
                         .executor(executor)
@@ -57,14 +56,12 @@ public class QuizProvider {
     public List<QuizQuestion> getAllQuizQuestions() {
         List<QuizQuestion> quizQuestions = new ArrayList<>();
 
-
         List<Integer> integers = callEveryQuestion().get();
 
         integers.forEach(integer -> {
             quizQuestions.add(getQuizQuestion(integer));
         });
 
-        System.out.println(quizQuestions);
         return quizQuestions;
     }
 
