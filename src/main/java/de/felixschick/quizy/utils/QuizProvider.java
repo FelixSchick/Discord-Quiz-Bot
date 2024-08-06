@@ -8,6 +8,7 @@ import de.felixschick.quizy.objects.QuizQuestion;
 import de.felixschick.quizy.objects.QuizQuestionAnswer;
 import de.felixschick.quizy.sql.MySQL;
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +49,11 @@ public class QuizProvider {
         quizQuestionCache = Caffeine.newBuilder()
                 .executor(executor)
                 .buildAsync(loadQuestionById());
+    }
+
+    @PreDestroy
+    public void preDestroy() {
+        saveAllQuizQuestionsToSQL();
     }
 
     public QuizQuestion getQuizQuestion(int id) {

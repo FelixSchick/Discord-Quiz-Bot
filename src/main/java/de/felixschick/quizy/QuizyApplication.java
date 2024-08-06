@@ -53,19 +53,7 @@ public class QuizyApplication implements ApplicationRunner {
     public void run(ApplicationArguments applicationArguments) {
         String[] args = applicationArguments.getSourceArgs();
         if (args.length >= 1) {
-
             startBot(args[0]);
-
-            Runtime.getRuntime().addShutdownHook(new Thread()
-            {
-                @Override
-                public void run()
-                {
-                    quizProvider.saveAllQuizQuestionsToSQL();
-                }
-            });
-
-
         } else
             throw new RuntimeException("No Token found...");
     }
