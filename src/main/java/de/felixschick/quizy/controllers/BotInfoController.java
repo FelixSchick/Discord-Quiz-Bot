@@ -14,6 +14,9 @@ import javax.management.ConstructorParameters;
 @RestController
 @RequestMapping("/api/bot-info")
 public class BotInfoController {
+    
+    @Autowired
+    private BotInformationProvider botInformationProvider;
 
     /**
      * Set the presence of the bot and save it
@@ -30,8 +33,8 @@ public class BotInfoController {
             throw new IllegalArgumentException("Invalid activity type: " + request.getActivityType());
         }
 
-        QuizyApplication.getBotInformationProvider().setInfo("activity_type", request.getActivityType());
-        QuizyApplication.getBotInformationProvider().setInfo("activity_label", request.getActivityLabel());
+        botInformationProvider.setInfo("activity_type", request.getActivityType());
+        botInformationProvider.setInfo("activity_label", request.getActivityLabel());
 
         QuizyApplication.getJda().getPresence().setActivity(Activity.of(activityType, request.getActivityLabel()));
         return "success";
@@ -44,8 +47,8 @@ public class BotInfoController {
     @GetMapping("/activity")
     public ActivityRequest getActivity() {
         return new ActivityRequest(
-                QuizyApplication.getBotInformationProvider().getInfo("activity_type"),
-                QuizyApplication.getBotInformationProvider().getInfo("activity_label")
+                botInformationProvider.getInfo("activity_type"),
+                botInformationProvider.getInfo("activity_label")
         );
     }
 }

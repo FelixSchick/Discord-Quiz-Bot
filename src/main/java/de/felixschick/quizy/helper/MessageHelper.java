@@ -4,10 +4,12 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import org.springframework.stereotype.Service;
 
 import java.awt.*;
 import java.util.Calendar;
 
+@Service
 public class MessageHelper {
 
     public static void error(TextChannel targetChannel, String title, String description) {

@@ -13,24 +13,31 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.*;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.awt.*;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@Component
 public class QuizCommand implements SlashCommand {
 
+
     private QuizProvider quizProvider;
+
 
     private QuestionCreationHandler creationHandler;
 
     private Random random;
 
-    public QuizCommand() {
+    @Autowired
+    public QuizCommand(QuizProvider quizProvider, QuestionCreationHandler creationHandler) {
+        this.quizProvider = quizProvider;
+        this.creationHandler = creationHandler;
+
         random = new Random();
-        quizProvider = QuizyApplication.getQuizProvider();
-        creationHandler = QuizyApplication.getCreationHandler();
     }
 
     @Override

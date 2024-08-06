@@ -4,15 +4,15 @@ import de.felixschick.quizy.QuizyApplication;
 import de.felixschick.quizy.handler.QuestionResponseHandler;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.checkerframework.checker.units.qual.C;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ButtonInteractionListener extends ListenerAdapter {
 
+    @Autowired
     private QuestionResponseHandler responseHandler;
-
-    public ButtonInteractionListener() {
-        responseHandler = QuizyApplication.getQuestionResponseHandler();
-    }
-
 
     @Override
     public void onButtonInteraction(ButtonInteractionEvent event) {

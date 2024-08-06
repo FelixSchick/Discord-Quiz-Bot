@@ -4,6 +4,7 @@ import de.felixschick.quizy.handler.QuestionCreationHandler;
 import de.felixschick.quizy.handler.QuestionResponseHandler;
 import de.felixschick.quizy.helper.CommandHelper;
 import de.felixschick.quizy.sql.MySQL;
+import de.felixschick.quizy.utils.ApplicationContextProvider;
 import de.felixschick.quizy.utils.BotInformationProvider;
 import de.felixschick.quizy.utils.QuizProvider;
 import lombok.Getter;
@@ -19,60 +20,39 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 
-@SpringBootApplication
+@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 public class QuizyApplication implements ApplicationRunner {
 
     @Getter
     private static JDA jda;
 
-    @Getter
-    private static CommandHelper commandHelper;
-
-    @Getter
+    @Autowired
     private static QuizProvider quizProvider;
 
-    @Getter
-    private static QuestionCreationHandler creationHandler;
-
-    @Getter
-    private static QuestionResponseHandler questionResponseHandler;
-
-    @Getter
-    private static MySQL mySQL;
-
-    @Getter
-    private static BotInformationProvider botInformationProvider;
-
-
-    @Getter
-    private static final ExecutorService executorService = Executors.newCachedThreadPool();
+    @Autowired
+    private BotInformationProvider botInformationProvider;
 
     public static void main(String[] args) {
         SpringApplication.run(QuizyApplication.class, args);
+    }
+
+    @Bean
+    public ExecutorService executorService() {
+        return Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     }
 
     @Override
     public void run(ApplicationArguments applicationArguments) {
         String[] args = applicationArguments.getSourceArgs();
         if (args.length >= 1) {
-            if (args.length == 6) {
-                mySQL = new MySQL(args[1], args[2], args[3], args[4], args[5]);
-            } else if (args.length == 5) {
-                mySQL = new MySQL(args[1], args[2], args[3], args[4]);
-            } else
-                throw new RuntimeException("No SQL input args found");
-
-            quizProvider = new QuizProvider();
-            botInformationProvider = new BotInformationProvider();
-            creationHandler = new QuestionCreationHandler();
-            questionResponseHandler = new QuestionResponseHandler();
-            commandHelper = new CommandHelper();
 
             startBot(args[0]);
 
@@ -110,8 +90,10 @@ public class QuizyApplication implements ApplicationRunner {
 
         reflections.getSubTypesOf(ListenerAdapter.class).forEach(aClass -> {
             try {
-                jda.addEventListener(aClass.newInstance());
-            } catch (InstantiationException | IllegalAccessException e) {
+                // Retrieve the bean from the Spring context
+                ListenerAdapter listener = (ListenerAdapter) ApplicationContextProvider.getContext().getBean(aClass);
+                jda.addEventListener(listener);
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         });

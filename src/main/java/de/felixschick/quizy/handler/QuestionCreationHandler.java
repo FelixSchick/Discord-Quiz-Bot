@@ -6,16 +6,20 @@ import de.felixschick.quizy.objects.QuizQuestion;
 import de.felixschick.quizy.objects.QuizQuestionAnswer;
 import de.felixschick.quizy.utils.QuizProvider;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class QuestionCreationHandler {
 
     private final QuizProvider quizProvider;
 
-    public QuestionCreationHandler() {
-        quizProvider = QuizyApplication.getQuizProvider();
+    @Autowired
+    public QuestionCreationHandler(QuizProvider quizProvider) {
+        this.quizProvider = quizProvider;
     }
 
     public void handleCreationSubCommand(SlashCommandInteractionEvent event) {
@@ -24,7 +28,7 @@ public class QuestionCreationHandler {
             final String questions = event.getOption("question").getAsString();
             final QuizQuestionDifficultyLevel difficultyLevel = QuizQuestionDifficultyLevel.valueOf(event.getOption("difficultylevel").getAsString());
 
-            quizProvider.creatQuizQuestion(event.getGuild().getIdLong(), questions, difficultyLevel, new ArrayList<>()).ifPresentOrElse(quizQuestion -> {
+            quizProvider.createQuizQuestion(event.getGuild().getIdLong(), questions, difficultyLevel, new ArrayList<>()).ifPresentOrElse(quizQuestion -> {
                 event.reply("Quiz-Frage: " + quizQuestion.getQuestion() + " wurde erfolgreich mit der ID #" + quizQuestion.getId() + " erstellt")
                         .setEphemeral(true).queue();
             }, () -> event.reply("Quiz-Frage: " + questions + " wurde erfolgreich erstellt")
