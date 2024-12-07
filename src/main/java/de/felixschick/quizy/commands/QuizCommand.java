@@ -97,11 +97,17 @@ public class QuizCommand implements SlashCommand {
                 .setColor(Color.BLUE);
 
         for (QuizQuestion quizQuestion : quizProvider.getAllQuizQuestions()) {
-            StringBuilder answerBuilder = new StringBuilder();
-            quizQuestion.getAnswers().forEach(quizQuestionAnswer ->
-                answerBuilder.append("  -").append(quizQuestionAnswer.getAnswer()).append("(").append(quizQuestionAnswer.isCorrect()).append(")\n")
-            );
-            embedBuilder.addField("Question " + quizQuestion.getId(), quizQuestion.getQuestion() + "\n" + answerBuilder.toString(), false);
+            if (quizQuestion.getGuildID() == Objects.requireNonNull(event.getGuild()).getIdLong()
+                    || quizQuestion.getGuildID() == -1) {
+
+                StringBuilder answerBuilder = new StringBuilder();
+                quizQuestion.getAnswers().forEach(quizQuestionAnswer ->
+                        answerBuilder.append("  -").append(quizQuestionAnswer.getAnswer()).append("\n")
+                );
+                embedBuilder.addField("Question " + quizQuestion.getId(), quizQuestion.getQuestion() + "\n" + answerBuilder.toString(), false);
+
+            }
+
         }
 
         embedBuilder.setFooter(Calendar.getInstance().getTime().toString());
@@ -134,26 +140,19 @@ public class QuizCommand implements SlashCommand {
             counter.getAndIncrement();
         });
 
-        if (actionRow.isEmpty())
+        if (actionRow.isEmpty()) {
             actionRow.add(Button.danger("quiz-error-noanswer", "No Answer available").withEmoji(Emoji.fromUnicode("U+1F928")).asDisabled());
+            actionRow.add(Button.success("quizadd%10%answer%10%"+randomQuestion.getId(), "But you can add one"));
+        }
 
         event.replyEmbeds(embedBuilder.build()).addActionRow(actionRow).queue();
     }
 
-    private String convertNumberToWord(int number) {
+    private String convertNumberToWord(final int number) {
         String[] digitEmojis = {"0️⃣", "1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣"};
-
-        boolean isNegative = number < 0;
-        if (isNegative) {
-            number = -number;
-        }
 
         String numberStr = String.valueOf(number);
         StringBuilder emojiStr = new StringBuilder();
-
-        if (isNegative) {
-            emojiStr.append("➖");
-        }
 
         for (char digit : numberStr.toCharArray()) {
             emojiStr.append(digitEmojis[digit - '0']);

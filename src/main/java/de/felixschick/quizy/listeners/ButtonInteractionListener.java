@@ -18,6 +18,8 @@ public class ButtonInteractionListener extends ListenerAdapter {
     public void onButtonInteraction(ButtonInteractionEvent event) {
         if (event.getComponent().getId().startsWith("quizanswer%10%")){
             responseHandler.handleButtonInteraction(event);
+        } else if (event.getComponent().getId().startsWith("quizadd%10%")) {
+            responseHandler.handleAddButtonInteraction(event);
         }
     }
 }

@@ -3,6 +3,7 @@ package de.felixschick.quizy.utils;
 import com.github.benmanes.caffeine.cache.AsyncCacheLoader;
 import com.github.benmanes.caffeine.cache.AsyncLoadingCache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import de.felixschick.quizy.DTO.QuestionRequest;
 import de.felixschick.quizy.enums.QuizQuestionDifficultyLevel;
 import de.felixschick.quizy.objects.QuizQuestion;
 import de.felixschick.quizy.objects.QuizQuestionAnswer;
@@ -244,6 +245,23 @@ public class QuizProvider {
             quizQuestion.getAnswers().forEach(answer -> answerBuilder.append(answer.getAnswer()).append(",").append(answer.isCorrect()).append(";"));
             mySQL.update("UPDATE quiz_questions SET question = '" + quizQuestion.getQuestion() + "', difficultylevel = '" + quizQuestion.getDifficultyLevel() + "', guildid = " + quizQuestion.getGuildID() + ", answers = '" + answerBuilder.toString() + "' WHERE id = " + id);
             log.info("Quiz Question {} saved", id);
+        }
+    }
+
+    public void updateQuestion(int id, QuestionRequest questionRequest) {
+        QuizQuestion quizQuestion = getQuizQuestion(id);
+
+        if (questionRequest.getQuestion() != null) {
+            quizQuestion.setQuestion(questionRequest.getQuestion());
+        }
+        if (questionRequest.getDifficultyLevel() != null) {
+            quizQuestion.setDifficultyLevel(questionRequest.getDifficultyLevel());
+        }
+        if (questionRequest.getAnswers() != null) {
+            quizQuestion.setAnswers(questionRequest.getAnswers());
+        }
+        if (questionRequest.getGuildID() != 0) {
+            quizQuestion.setGuildID(questionRequest.getGuildID());
         }
     }
 }

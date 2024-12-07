@@ -35,9 +35,6 @@ public class QuizyApplication implements ApplicationRunner {
     private static JDA jda;
 
     @Autowired
-    private static QuizProvider quizProvider;
-
-    @Autowired
     private BotInformationProvider botInformationProvider;
 
     public static void main(String[] args) {

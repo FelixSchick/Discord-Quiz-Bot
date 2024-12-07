@@ -30,7 +30,7 @@ public class BotInfoController {
         try {
             activityType = Activity.ActivityType.valueOf(request.getActivityType().toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid activity type: " + request.getActivityType());
+            return "Invalid activity type";
         }
 
         botInformationProvider.setInfo("activity_type", request.getActivityType());
